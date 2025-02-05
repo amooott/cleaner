@@ -2,12 +2,10 @@ import os
 import re
 
 def list_txt_files():
-    """Liste les fichiers .txt dans le dossier courant."""
     return [f for f in os.listdir('.') if f.endswith('.txt')]
 
 def print_error(message):
-    """Affiche un message d'erreur en rouge."""
-    print(f"\033[91m{message}\033[0m")  # Code ANSI pour le rouge
+    print(f"\033[91m{message}\033[0m")
 
 def main():
     try:
@@ -31,38 +29,16 @@ def main():
             input("Press Enter to exit.")
             return
 
-        # Demander à l'utilisateur les mots ou expressions à supprimer
         print("Enter the words or phrases to delete (separated by commas):")
         user_input = input().strip()
         patterns = [item.strip() for item in user_input.split(',')]
 
-        # Nettoyage du fichier
         with open(file_to_clean, 'r', encoding='utf-8') as file:
             content = file.readlines()
 
-        # Suppression des lignes commençant par "🇲🇦" et autres conditions
-        new_content = []
-        lines_removed = 0
-        for line in content:
-            # Supprimer les lignes qui commencent par "🇲🇦"
-            if line.startswith("🇲🇦"):
-                lines_removed += 1
-                continue
-            # Suppression des lignes commençant par "hit by" ou des phrases spécifiques
-            if re.match(r'^\s*hit by', line, flags=re.IGNORECASE) or \
-               re.match(r'^\s*🇲🇦💎====== HIT By MANZERA AYENNA ======💎🇲🇦\s*$', line, flags=re.IGNORECASE) or \
-               re.match(r'^\s*🔥🔥===== Telegram:', line, flags=re.IGNORECASE):
-                lines_removed += 1
-                continue
-            # Ajout de la ligne nettoyée à la nouvelle liste
-            new_content.append(line)
-
-        # Construction du pattern de suppression basé sur l'entrée utilisateur
         pattern = '|'.join([re.escape(item) for item in patterns])
         text = ''.join(new_content)
         cleaned_content, num_subs = re.subn(pattern, '', text, flags=re.IGNORECASE)
-
-        # Écriture du contenu nettoyé dans le fichier
         with open(file_to_clean, 'w', encoding='utf-8') as file:
             file.write(cleaned_content)
 
